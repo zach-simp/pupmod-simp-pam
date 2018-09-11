@@ -80,7 +80,6 @@ define pam::auth (
   Boolean                        $enable_separator          = $::pam::enable_separator,
   Boolean                        $oath                      = $::pam::oath,
   Integer[0]                     $oath_window               = $::pam::oath_window,
-  Optional[Hash]                 $oath_users                = $::pam::oath_users,
   Optional[String]               $content                   = undef
 ) {
   include '::oddjob::mkhomedir'
