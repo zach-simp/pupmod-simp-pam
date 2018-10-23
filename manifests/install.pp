@@ -12,4 +12,9 @@ class pam::install {
   if $::pam::password_check_backend == 'pwquality' {
     package { 'libpwquality': ensure => $::pam::package_ensure }
   }
+
+  if $::pam::oath == true {
+    package { 'pam_oath': ensure => $::pam::package_ensure }
+    package { 'liboath': ensure  => $::pam::package_ensure }
+  }
 }

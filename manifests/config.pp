@@ -47,6 +47,32 @@ class pam::config {
     }
   }
 
+
+  if ($::pam::oath == true) {
+    file { '/etc/liboath/users.oath':
+      ensure  => 'file',
+      owner   => 'root',
+      group   => 'root',
+      mode    => '0600',
+      content => file("${module_name}/files/etc/liboath/users.oath")
+    }
+    file { '/etc/liboath/exclude_users.oath':
+      ensure  => 'file',
+      owner   => 'root',
+      group   => 'root',
+      mode    => '0644',
+      content => file("${module_name}/files/etc/liboath/exclude_users.oath")
+    }
+    file { '/etc/liboath/exclude_groups.oath':
+      ensure  => 'file',
+      owner   => 'root',
+      group   => 'root',
+      mode    => '0644',
+      content => file("${module_name}/files/etc/liboath/exclude_groups.oath")
+    }
+
+  }
+
   if $::pam::other_content {
     $_other_content = $::pam::other_content
   }
