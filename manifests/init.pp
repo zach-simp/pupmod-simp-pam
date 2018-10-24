@@ -267,7 +267,7 @@ class pam (
   Optional[StdLib::Absolutepath] $cracklib_dictpath         = undef,
   Boolean                        $rm_pwquality_conf_d       = true,
   Boolean                        $oath                      = simplib::lookup('simp_options::oath', { 'default_value'   =>  false }),
-  Integer[0]                     $oath_window               = 1
+  Integer[0]                     $oath_window               = 1,
   Integer[0]                     $deny                      = 5,
   Boolean                        $display_account_lock      = false,
   Simplib::Umask                 $homedir_umask             = '0077',
