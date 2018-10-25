@@ -49,28 +49,40 @@ class pam::config {
 
 
   if ($::pam::oath == true) {
-    file { '/etc/liboath/users.oath':
-      ensure  => 'file',
+    file { '/etc/liboath':
+      ensure  => 'directory',
       owner   => 'root',
       group   => 'root',
-      mode    => '0600',
-      content => file("${module_name}/files/etc/liboath/users.oath")
+      seluser => 'system_u',
+      seltype => 'var_auth_t'
     }
     file { '/etc/liboath/exclude_users.oath':
       ensure  => 'file',
       owner   => 'root',
       group   => 'root',
       mode    => '0644',
-      content => file("${module_name}/files/etc/liboath/exclude_users.oath")
+      seluser => 'system_u',
+      seltype => 'var_auth_t',
+      source  => "puppet:///modules/${module_name}/etc/liboath/exclude_users.oath"
     }
     file { '/etc/liboath/exclude_groups.oath':
       ensure  => 'file',
       owner   => 'root',
       group   => 'root',
       mode    => '0644',
-      content => file("${module_name}/files/etc/liboath/exclude_groups.oath")
+      seluser => 'system_u',
+      seltype => 'var_auth_t',
+      source  => "puppet:///modules/${module_name}/etc/liboath/exclude_groups.oath"
     }
-
+    file { '/etc/liboath/users.oath':
+      ensure  => 'file',
+      owner   => 'root',
+      group   => 'root',
+      mode    => '0600',
+      seluser => 'system_u',
+      seltype => 'var_auth_t',
+      source  => "puppet:///modules/${module_name}/etc/liboath/users.oath"
+    }
   }
 
   if $::pam::other_content {
@@ -129,5 +141,5 @@ class pam::config {
     }
   }
 
-  if ! empty($::pam::auth_sections) { ::pam::auth { $::pam::auth_sections: } }
+  if ! empty($::pam::auth_sections) { ::pam::auth { $::pam::auth_sections: }}
 }

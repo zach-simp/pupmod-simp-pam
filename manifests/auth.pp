@@ -43,8 +43,6 @@
 # @param content
 #
 define pam::auth (
-  Boolean                        $oath                      = $::pam::oath,
-  Integer[0]                     $oath_window               = $::pam::window_oath,
   Pam::PasswordBackends          $password_check_backend    = $::pam::password_check_backend,
   Optional[Stdlib::Absolutepath] $locale_file               = $::pam::locale_file,
   Boolean                        $cracklib_enforce_for_root = $::pam::cracklib_enforce_for_root,
@@ -80,6 +78,8 @@ define pam::auth (
   Array[String[0]]               $tty_audit_users           = $::pam::tty_audit_users,
   String[0]                      $separator                 = $::pam::separator,
   Boolean                        $enable_separator          = $::pam::enable_separator,
+  Boolean                        $oath                      = $::pam::oath,
+  Integer[0]                     $oath_window               = $::pam::oath_window,
   Optional[String]               $content                   = undef
 ) {
   include '::oddjob::mkhomedir'
