@@ -74,15 +74,6 @@ class pam::config {
       seltype => 'var_auth_t',
       source  => "puppet:///modules/${module_name}/etc/liboath/exclude_groups.oath"
     }
-    file { '/etc/liboath/users.oath':
-      ensure  => 'file',
-      owner   => 'root',
-      group   => 'root',
-      mode    => '0600',
-      seluser => 'system_u',
-      seltype => 'var_auth_t',
-      source  => "puppet:///modules/${module_name}/etc/liboath/users.oath"
-    }
   }
 
   if $::pam::other_content {

@@ -80,6 +80,7 @@ define pam::auth (
   Boolean                        $enable_separator          = $::pam::enable_separator,
   Boolean                        $oath                      = $::pam::oath,
   Integer[0]                     $oath_window               = $::pam::oath_window,
+  Optional[Hash]                 $oath_users                = $::pam::oath_users,
   Optional[String]               $content                   = undef
 ) {
   include '::oddjob::mkhomedir'
@@ -124,6 +125,31 @@ define pam::auth (
     group   => 'root',
     mode    => '0644',
     content => $_content
+  }
+
+  if $oath_users {
+    if $users['defaults'].is_a(Hash) {
+      $defaults = $users['defaults']
+      $raw_users = $users - 'defaults'
+    }
+    else {
+      $defaults = {}
+      $raw_users = $users
+    }
+
+    $raw_users.each |$oath_user, $options| {
+      if $options.is_a(Hash) {
+        $args = { 'users' => [$oath_user] } + $options 
+      }
+      else {
+        $args = { 'users' => [$oath_user] }
+      }
+
+      pam::auth::user {
+        default:  *            => $defaults;
+        "user_${oath_user}": * => $args;
+      }
+    }
   }
 
   if ! $preserve_ac {
