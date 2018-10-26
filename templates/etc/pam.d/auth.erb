@@ -31,7 +31,7 @@ if ['system'].include?(@name)
     _auth << 'auth     [success=3 default=ignore] pam_listfile.so item=group sense=allow file=/etc/liboath/exclude_groups.oath'
     _auth << 'auth     [success=2 default=ignore] pam_listfile.so item=user sense=allow file=/etc/liboath/exclude_users.oath'
     _auth << "auth     [success=1 default=bad]     pam_oath.so usersfile=/etc/liboath/users.oath window=#{@oath_window}"
-    _auth << "auth     requisite  pam_deny.so
+    _auth << "auth     requisite  pam_deny.so"
   end
 end
 
