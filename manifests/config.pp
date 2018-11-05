@@ -56,6 +56,15 @@ class pam::config {
       seluser => 'system_u',
       seltype => 'var_auth_t'
     }
+    concat { '/etc/liboath/users.oath':
+      owner          => 'root',
+      group          => 'root',
+      mode           => '0600',
+      ensure_newline => true,
+      warn           => true,
+      seluser        => 'system_u',
+      seltype        => 'var_auth_t'
+    }
     file { '/etc/liboath/exclude_users.oath':
       ensure  => 'file',
       owner   => 'root',
@@ -73,6 +82,32 @@ class pam::config {
       seluser => 'system_u',
       seltype => 'var_auth_t',
       source  => "puppet:///modules/${module_name}/etc/liboath/exclude_groups.oath"
+    }
+
+    if $pam::oath_users {
+      if $pam::oath_users['defaults'].is_a(Hash) {
+        $defaults = $pam::oath_users['defaults']
+        $raw_users = $pam::oath_users - 'defaults'
+      }
+      else {
+        $defaults = {}
+        $raw_users = $pam::oath_users
+      }
+
+  
+      $raw_users.each |$some_user, $options| {
+        if $options.is_a(Hash) {
+          $args = { 'users' => [$some_user] } + $options 
+        }
+        else {
+          $args = { 'users' => [$some_user] }
+        }
+  
+        pam::config::user {
+          default:  *            => $defaults;
+          "user_${some_user}": * => $args;
+        }
+      }
     }
   }
 

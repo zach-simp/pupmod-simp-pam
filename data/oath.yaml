@@ -1,0 +1,16 @@
+---
+pam::oath_users:
+  defaults:
+    token_type:
+      - 'HOTP/T30/6'
+    pin:            
+      - '-'
+  root:
+    secret_key:
+      - '000001'
+  simp:
+    secret_key:
+      - '000001'
+  test:
+    secret_key:
+      - '000001'

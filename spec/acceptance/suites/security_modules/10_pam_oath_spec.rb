@@ -1,0 +1,83 @@
+require 'spec_helper_acceptance'
+
+test_name 'pam check oath'
+
+describe 'pam check oath' do
+
+
+  let(:server_hieradata) do {
+      'simp_options::trusted_nets'                => ['ALL'],
+      'ssh::server::conf::banner'                 => '/dev/null',
+      'ssh::server::conf::permitrootlogin'        => true,
+      'ssh::server::conf::passwordauthentication' => true,
+      'ssh::server::conf::authorizedkeysfile'     => '.ssh/authorized_keys',
+      'pam::oath'                                 =>  true
+    }
+  end
+
+  #
+  # NOTE: by default, include 'ssh' will automatically include the ssh_server
+  let(:client_manifest) { "include 'ssh::client'" }
+
+  let(:server_manifest) {
+     <<-SERVER_CONFIG
+         include 'ssh::server'
+         include 'pam'
+     SERVER_CONFIG
+  }
+  let(:password) {"suP3rF00B@rB@11bx23"}
+
+  let(:files_dir) { File.join(File.dirname(__FILE__), 'files') }
+  hosts_as('server').each do |_server|
+    os = _server.hostname.split('-').first
+    context "on #{os}:" do
+
+      let(:server) { _server }
+
+      let(:client) do
+        os = server.hostname.split('-').first
+        hosts_as('client').select { |x| x.hostname =~ /^#{os}-.+/ }.first
+      end
+
+
+      context 'with default parameters' do
+        it 'should configure server with no errors' do
+          install_package(server, 'epel-release')
+          install_package(server, 'oathtool')
+          install_package(server, 'expect')
+          set_hieradata_on(server, server_hieradata)
+          apply_manifest_on(server, server_manifest, expect_changes: true)
+        end
+
+        it "should configure #{os}-server idempotently" do
+          set_hieradata_on(server, server_hieradata)
+          apply_manifest_on(server, server_manifest, catch_changes: true)
+        end
+
+        it "should configure #{os}-client idempotently" do
+          apply_manifest_on(client, client_manifest, catch_changes: true)
+        end
+      end
+
+      context "Test /etc/pam.d/system-auth oath through su" do
+
+        let(:test_user) { 'test' }
+        let(:vagrant_user) { 'vagrant' }
+        let(:oath_key) {'000001'}
+
+        it 'Copy test scripts to server' do
+          scp_to(server, File.join(files_dir, 'expect_su_test'), '/usr/local/bin/expect_su_test')
+        end
+        it 'check that the test user can su' do  
+          on(server, "/usr/local/bin/expect_su_test #{test_user} #{oath_key} #{password}")
+        end
+        it 'fail auth with bad TOTP' do
+          on(server, "/usr/local/bin/expect_su_test #{test_user} 000000 #{password}", :acceptable_exit_codes => [1])
+        end
+        if 'fail auth with good TOTP and bad pass'
+          on(server, "/usr/local/bin/expect_su_test #{test_user} #{oath_key} bad_password", :acceptable_exit_codes => [1])
+        end
+      end
+    end
+  end
+end
