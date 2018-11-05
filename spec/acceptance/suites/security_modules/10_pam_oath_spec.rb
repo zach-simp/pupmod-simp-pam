@@ -68,13 +68,16 @@ describe 'pam check oath' do
         it 'Copy test scripts to server' do
           scp_to(server, File.join(files_dir, 'expect_su_test'), '/usr/local/bin/expect_su_test')
         end
+
         it 'check that the test user can su' do  
           on(server, "/usr/local/bin/expect_su_test #{test_user} #{oath_key} #{password}")
         end
+        
         it 'fail auth with bad TOTP' do
           on(server, "/usr/local/bin/expect_su_test #{test_user} 000000 #{password}", :acceptable_exit_codes => [1])
         end
-        if 'fail auth with good TOTP and bad pass'
+        
+        it 'fail auth with good TOTP and bad pass' do
           on(server, "/usr/local/bin/expect_su_test #{test_user} #{oath_key} bad_password", :acceptable_exit_codes => [1])
         end
       end
