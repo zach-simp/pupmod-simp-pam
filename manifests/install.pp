@@ -15,6 +15,16 @@ class pam::install {
 
   if $::pam::oath == true {
     package { 'pam_oath': ensure => $::pam::package_ensure }
+    case $facts['os']['name'] {
+      'RedHat','CentOS','OracleLinux': {
+        if $facts['os']['release']['major'] == '6' {
+          file { '/lib64/security/pam_oath.so':
+            ensure => 'link',
+            target => '/usr/lib64/security/pam_oath.so'
+          }
+        }
+      }
+    }
     package { 'liboath': ensure  => $::pam::package_ensure }
   }
 }

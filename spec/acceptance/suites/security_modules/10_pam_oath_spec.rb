@@ -61,24 +61,26 @@ describe 'pam check oath' do
 
       context "Test /etc/pam.d/system-auth oath through su" do
 
-        let(:test_user) { 'test' }
+        let(:test_user) { 'tst0_usr' }
         let(:vagrant_user) { 'vagrant' }
         let(:oath_key) {'000001'}
 
         it 'Copy test scripts to server' do
           scp_to(server, File.join(files_dir, 'expect_su_test'), '/usr/local/bin/expect_su_test')
+          on(server, "chown #{vagrant_user}:#{vagrant_user} /usr/local/bin/expect_su_test")
+          on(server, "chmod u+x /usr/local/bin/expect_su_test")
         end
 
         it 'check that the test user can su' do  
-          on(server, "/usr/local/bin/expect_su_test #{test_user} #{oath_key} #{password}")
+          on(server, %Q[runuser -l #{vagrant_user} -c "/usr/local/bin/expect_su_test #{test_user} #{oath_key} #{password}"])
         end
         
         it 'fail auth with bad TOTP' do
-          on(server, "/usr/local/bin/expect_su_test #{test_user} 000000 #{password}", :acceptable_exit_codes => [1])
+          on(server, %Q[runuser -l #{vagrant_user} -c "/usr/local/bin/expect_su_test #{test_user} 000000 #{password}"], :acceptable_exit_codes => [1])
         end
         
         it 'fail auth with good TOTP and bad pass' do
-          on(server, "/usr/local/bin/expect_su_test #{test_user} #{oath_key} bad_password", :acceptable_exit_codes => [1])
+          on(server, %Q[runuser -l #{vagrant_user} -c "/usr/local/bin/expect_su_test #{test_user} #{oath_key} bad_password"], :acceptable_exit_codes => [1])
         end
       end
     end

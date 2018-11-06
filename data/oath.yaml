@@ -11,6 +11,6 @@ pam::oath_users:
   simp:
     secret_key:
       - '000001'
-  test:
+  tst0_usr:
     secret_key:
       - '000001'

@@ -13,11 +13,13 @@ expect {
         send "$output\r"
         exp_continue
     } "*assword:*" {
-        stty -echo
         send_user "password (for $user)"
         send "$pass\r"
-        stty echo
         exp_continue
+    } "*su: incorrect password*" {
+        send_user "Bad password or error in pam stack on EL6\n"
+        send_user "TOTP test: failure\n"
+        exit 1
     } "*su: Authentication failure*" {
         send_user "Invalid TOTP code\n"
         send_user "TOTP test: failure\n"
