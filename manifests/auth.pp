@@ -127,31 +127,6 @@ define pam::auth (
     content => $_content
   }
 
-  if $oath_users {
-    if $users['defaults'].is_a(Hash) {
-      $defaults = $users['defaults']
-      $raw_users = $users - 'defaults'
-    }
-    else {
-      $defaults = {}
-      $raw_users = $users
-    }
-
-    $raw_users.each |$oath_user, $options| {
-      if $options.is_a(Hash) {
-        $args = { 'users' => [$oath_user] } + $options 
-      }
-      else {
-        $args = { 'users' => [$oath_user] }
-      }
-
-      pam::auth::user {
-        default:  *            => $defaults;
-        "user_${oath_user}": * => $args;
-      }
-    }
-  }
-
   if ! $preserve_ac {
     file { "${basedir}/${target}-ac":
       ensure => absent

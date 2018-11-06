@@ -12,3 +12,5 @@ hierarchy:
     path: "os/%{facts.kernel}.yaml"
   - name: "Common"
     path: "common.yaml"
+  - name: "Oath"
+    path: "oath.yaml"
