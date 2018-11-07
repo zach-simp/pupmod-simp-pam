@@ -38,8 +38,8 @@ describe 'pam check oath' do
         os = server.hostname.split('-').first
         hosts_as('client').select { |x| x.hostname =~ /^#{os}-.+/ }.first
       end
-
-
+      
+      
       context 'with default parameters' do
         it 'should configure server with no errors' do
           install_package(server, 'epel-release')
@@ -48,29 +48,29 @@ describe 'pam check oath' do
           set_hieradata_on(server, server_hieradata)
           apply_manifest_on(server, server_manifest, expect_changes: true)
         end
-
+        
         it "should configure #{os}-server idempotently" do
           set_hieradata_on(server, server_hieradata)
           apply_manifest_on(server, server_manifest, catch_changes: true)
         end
-
+        
         it "should configure #{os}-client idempotently" do
           apply_manifest_on(client, client_manifest, catch_changes: true)
         end
       end
-
+      
       context "Test /etc/pam.d/system-auth oath through su" do
-
+        
         let(:test_user) { 'tst0_usr' }
         let(:vagrant_user) { 'vagrant' }
         let(:oath_key) {'000001'}
-
+        
         it 'Copy test scripts to server' do
           scp_to(server, File.join(files_dir, 'expect_su_test'), '/usr/local/bin/expect_su_test')
           on(server, "chown #{vagrant_user}:#{vagrant_user} /usr/local/bin/expect_su_test")
           on(server, "chmod u+x /usr/local/bin/expect_su_test")
         end
-
+        
         it 'check that the test user can su' do  
           on(server, %Q[runuser -l #{vagrant_user} -c "/usr/local/bin/expect_su_test #{test_user} #{oath_key} #{password}"])
         end
@@ -81,6 +81,16 @@ describe 'pam check oath' do
         
         it 'fail auth with good TOTP and bad pass' do
           on(server, %Q[runuser -l #{vagrant_user} -c "/usr/local/bin/expect_su_test #{test_user} #{oath_key} bad_password"], :acceptable_exit_codes => [1])
+        end
+        it 'test group exclusion' do
+          on(server, "echo '#{test_user}' >> /etc/liboath/exclude_groups.oath")
+          on(server, "su -l #{vagrant_user} -c '/usr/local/bin/su_test_script.rb -u #{test_user} -p #{password}'")
+          on(server, "sed -i.old -r '/#{test_user}/d' /etc/liboath/exclude_groups.oath")
+        end
+        it 'test user exclusion' do
+          on(server, "echo '#{test_user}' >> /etc/liboath/exclude_users.oath")
+          on(server, "su -l #{vagrant_user} -c '/usr/local/bin/su_test_script.rb -u #{test_user} -p #{password}'")
+          on(server, "sed -i.old -r '/#{test_user}/d' /etc/liboath/exclude_users.oath")
         end
       end
     end
