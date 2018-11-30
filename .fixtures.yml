@@ -20,6 +20,10 @@ fixtures:
     ssh: https://github.com/simp/pupmod-simp-ssh
     sssd: https://github.com/simp/pupmod-simp-sssd
     stdlib: https://github.com/simp/puppetlabs-stdlib
+    oath: 
+      # //FIXME needs to get changed to a simp repo when PR goes through
+      repo: https://github.com/zach-simp/pupmod-simp-oath
+      branch: SIMP-5324
     tcpwrappers: https://github.com/simp/pupmod-simp-tcpwrappers
     disa_stig-el7-baseline:
       repo: https://github.com/simp/inspec-profile-disa_stig-el7

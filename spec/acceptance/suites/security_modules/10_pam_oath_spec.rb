@@ -11,7 +11,7 @@ describe 'pam check oath' do
       'ssh::server::conf::permitrootlogin'        => true,
       'ssh::server::conf::passwordauthentication' => true,
       'ssh::server::conf::authorizedkeysfile'     => '.ssh/authorized_keys',
-      'pam::oath'                                 =>  true
+      'simp_options::oath'                        =>  true
     }
   end
 
@@ -23,6 +23,7 @@ describe 'pam check oath' do
      <<-SERVER_CONFIG
          include 'ssh::server'
          include 'pam'
+         include 'oath'
      SERVER_CONFIG
   }
   let(:password) {"suP3rF00B@rB@11bx23"}

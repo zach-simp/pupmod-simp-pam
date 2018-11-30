@@ -12,10 +12,11 @@ expect {
     "*One-time password*" {
         send "$output\r"
         exp_continue
-    } "*assword:*" {
-        send_user "password (for $user)"
-        send "$pass\r"
-        exp_continue
+        expect "*assword:*" {
+            send_user "password (for $user)"
+            send "$pass\r"
+            exp_continue
+        }
     } "*su: incorrect password*" {
         send_user "Bad password or error in pam stack on EL6\n"
         send_user "TOTP test: failure\n"
