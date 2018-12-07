@@ -21,6 +21,8 @@
 # @param cracklib_minclass
 # @param cracklib_minlen
 # @param cracklib_retry
+# @param oath
+# @param oath_window
 # @param deny
 # @param display_account_lock
 # @param fail_interval
@@ -83,6 +85,9 @@ define pam::auth (
   Optional[String]               $content                   = undef
 ) {
   include '::oddjob::mkhomedir'
+  if $oath == true {
+    simplib::assert_optional_dependency($module_name, 'simp/oath')
+  }
 
   if fact('fips_enabled') {
     unless $hash_algorithm =~ Enum['sha256', 'sha512'] {

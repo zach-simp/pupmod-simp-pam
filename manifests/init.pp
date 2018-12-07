@@ -172,6 +172,14 @@
 #   If you make it to the ``other`` PAM configuration file, then provide a
 #   warning that the login method was uncaught by other PAM stacks
 #
+# @param oath  Configures  to use pam_oath TOTP in the system-auth pam stack.
+#   Inherits from simp_options::oath, defaults to false if not found. 
+#   WARNING: pupmod-simp-oath is a dependency of this option. If this is 
+#            set to true without the oath module, you will be unable to
+#            log in locally!
+#
+# @param oath_window  Sets the TOTP window (Defined in RFC 6238 section 5.2)
+#
 # @param deny_if_unknown
 #   If true, deny any access to an application that falls all the way through
 #   the PAM stack to ``other``

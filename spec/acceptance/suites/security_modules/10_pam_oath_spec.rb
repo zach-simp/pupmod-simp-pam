@@ -1,4 +1,5 @@
 require 'spec_helper_acceptance'
+require 'json'
 
 test_name 'pam check oath'
 
@@ -11,7 +12,8 @@ describe 'pam check oath' do
       'ssh::server::conf::permitrootlogin'        => true,
       'ssh::server::conf::passwordauthentication' => true,
       'ssh::server::conf::authorizedkeysfile'     => '.ssh/authorized_keys',
-      'simp_options::oath'                        =>  true
+      'simp_options::oath'                        =>  true,
+      'oath::oath_users'                          => JSON.parse(%Q({"tst0_usr": {"token_type": "HOTP/T30/6", "pin": "-", "secret_key": "000001"}}))
     }
   end
 
